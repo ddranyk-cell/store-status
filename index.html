@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Статус - KFC Вокзал</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--tg-theme-bg-color, #f4f4f5);
+      color: var(--tg-theme-text-color, #000);
+      padding: 16px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .header-card {
+      background: #2563eb;
+      color: white;
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header-card h3 { margin: 0 0 6px 0; font-size: 18px; }
+    .header-info { font-size: 13px; opacity: 0.9; line-height: 1.4; }
+    
+    .section {
+      background: var(--tg-theme-secondary-bg-color, #ffffff);
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .section-title { font-weight: bold; margin-bottom: 8px; font-size: 12px; color: #6b7280; text-transform: uppercase; }
+    .btn-group { display: flex; gap: 8px; }
+    .btn-option {
+      flex: 1; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: #f9fafb; color: #374151; font-weight: 600; font-size: 13px; cursor: pointer; text-align: center;
+    }
+    .btn-option.active-green { background: #22c55e; color: #fff; border-color: #22c55e; }
+    .btn-option.active-red { background: #ef4444; color: #fff; border-color: #ef4444; }
+    .btn-option.active-orange { background: #f97316; color: #fff; border-color: #f97316; }
+    
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+    .toggle-row span { font-size: 14px; font-weight: 500; }
+    
+    .submit-btn {
+      width: 100%; padding: 14px; background: var(--tg-theme-button-color, #2563eb);
+      color: var(--tg-theme-button-text-color, #ffffff); border: none; border-radius: 10px;
+      font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-card">
+    <h3>📍 KFC Вокзал (Тест)</h3>
+    <div class="header-info">
+      <div>📞 <b>Тел:</b> +380670000000</div>
+      <div>👤 <b>Директор:</b> Іванов І.</div>
+      <div>👔 <b>ТК:</b> Петров П.</div>
+    </div>
+  </div>
+
+  <!-- 1. Загальний статус -->
+  <div class="section">
+    <div class="section-title">1. Загальний статус</div>
+    <div class="btn-group" id="main-status-group">
+      <div class="btn-option active-green" onclick="selectMainStatus('Відчинені', this)">Відчинені</div>
+      <div class="btn-option" onclick="selectMainStatus('В укритті', this)">В укритті</div>
+      <div class="btn-option" onclick="selectMainStatus('Зачинені', this)">Зачинені</div>
+    </div>
+  </div>
+
+  <!-- 2. Канали продажів -->
+  <div class="section">
+    <div class="section-title">2. Канали продажів</div>
+    <div class="toggle-row">
+      <span>Зал</span>
+      <div class="btn-group">
+        <button class="btn-option active-green" onclick="toggleBtn(this, 'hall')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn(this, 'hall')">Ні</button>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span>Драйв</span>
+      <div class="btn-group">
+        <button class="btn-option active-green" onclick="toggleBtn(this, 'drive')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn(this, 'drive')">Ні</button>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span>Доставка</span>
+      <div class="btn-group">
+        <button class="btn-option active-green" onclick="toggleBtn(this, 'delivery')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn(this, 'delivery')">Ні</button>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span>СС (Самовивіз)</span>
+      <div class="btn-group">
+        <button class="btn-option active-green" onclick="toggleBtn(this, 'pickup')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn(this, 'pickup')">Ні</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Комунікації -->
+  <div class="section">
+    <div class="section-title">3. Комунікації</div>
+    <div class="toggle-row">
+      <span>Світло від мережі</span>
+      <div class="btn-group">
+        <button class="btn-option active-green" onclick="toggleBtn(this, 'power')">Є</button>
+        <button class="btn-option" onclick="toggleBtn(this, 'power')">Немає</button>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span>Вода</span>
+      <div class="btn-group">
+        <button class="btn-option active-green" onclick="toggleBtn(this, 'water')">Є</button>
+        <button class="btn-option" onclick="toggleBtn(this, 'water')">Немає</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="sendData()">Зберегти та відправити</button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let state = {
+      restaurantCode: 'KFC-VOKZAL',
+      restaurantName: 'KFC Вокзал',
+      phone: '+380670000000',
+      director: 'Іванов І.',
+      tk: 'Петров П.',
+      mainStatus: 'Відчинені',
+      hall: 'Працює',
+      drive: 'Працює',
+      delivery: 'Працює',
+      pickup: 'Працює',
+      power: 'Є',
+      water: 'Є'
+    };
+
+    function selectMainStatus(val, el) {
+      document.querySelectorAll('#main-status-group .btn-option').forEach(b => b.className = 'btn-option');
+      if(val === 'Відчинені') { el.className = 'btn-option active-green'; }
+      if(val === 'В укритті') { el.className = 'btn-option active-orange'; }
+      if(val === 'Зачинені') { el.className = 'btn-option active-red'; }
+      state.mainStatus = val;
+    }
+
+    function toggleBtn(el, key) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.btn-option').forEach(b => b.className = 'btn-option');
+      const isPositive = el.innerText === 'Працює' || el.innerText === 'Є';
+      el.className = isPositive ? 'btn-option active-green' : 'btn-option active-red';
+      state[key] = el.innerText;
+    }
+
+    function sendData() {
+      tg.sendData(JSON.stringify(state));
+    }
+  </script>
+</body>
+</html>
