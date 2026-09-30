@@ -58,8 +58,7 @@
     <h3>📍 KFC Вокзал (Тест)</h3>
     <div class="header-info">
       <div>📞 <b>Тел:</b> +380670000000</div>
-      <div>👤 <b>Директор:</b> Іванов І.</div>
-      <div>👔 <b>ТК:</b> Петров П.</div>
+      <div>👤 <b>Директор:</b> Іванов І. | 👔 <b>ТК:</b> Петров П.</div>
     </div>
   </div>
 
@@ -67,9 +66,9 @@
   <div class="section">
     <div class="section-title">1. Загальний статус</div>
     <div class="btn-group" id="main-status-group">
-      <div class="btn-option active-green" onclick="selectMainStatus('Відчинені', this)">Відчинені</div>
-      <div class="btn-option" onclick="selectMainStatus('В укритті', this)">В укритті</div>
-      <div class="btn-option" onclick="selectMainStatus('Зачинені', this)">Зачинені</div>
+      <div class="btn-option" id="btn-main-open" onclick="selectMainStatus('Відчинені')">Відчинені</div>
+      <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('В укритті')">В укритті</div>
+      <div class="btn-option" id="btn-main-closed" onclick="selectMainStatus('Зачинені')">Зачинені</div>
     </div>
   </div>
 
@@ -78,30 +77,30 @@
     <div class="section-title">2. Канали продажів</div>
     <div class="toggle-row">
       <span>Зал</span>
-      <div class="btn-group">
-        <button class="btn-option active-green" onclick="toggleBtn(this, 'hall')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn(this, 'hall')">Ні</button>
+      <div class="btn-group" id="group-hall">
+        <button class="btn-option" onclick="toggleBtn('hall', 'Працює')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn('hall', 'Ні')">Ні</button>
       </div>
     </div>
     <div class="toggle-row">
       <span>Драйв</span>
-      <div class="btn-group">
-        <button class="btn-option active-green" onclick="toggleBtn(this, 'drive')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn(this, 'drive')">Ні</button>
+      <div class="btn-group" id="group-drive">
+        <button class="btn-option" onclick="toggleBtn('drive', 'Працює')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn('drive', 'Ні')">Ні</button>
       </div>
     </div>
     <div class="toggle-row">
       <span>Доставка</span>
-      <div class="btn-group">
-        <button class="btn-option active-green" onclick="toggleBtn(this, 'delivery')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn(this, 'delivery')">Ні</button>
+      <div class="btn-group" id="group-delivery">
+        <button class="btn-option" onclick="toggleBtn('delivery', 'Працює')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn('delivery', 'Ні')">Ні</button>
       </div>
     </div>
     <div class="toggle-row">
       <span>СС (Самовивіз)</span>
-      <div class="btn-group">
-        <button class="btn-option active-green" onclick="toggleBtn(this, 'pickup')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn(this, 'pickup')">Ні</button>
+      <div class="btn-group" id="group-pickup">
+        <button class="btn-option" onclick="toggleBtn('pickup', 'Працює')">Працює</button>
+        <button class="btn-option" onclick="toggleBtn('pickup', 'Ні')">Ні</button>
       </div>
     </div>
   </div>
@@ -111,16 +110,16 @@
     <div class="section-title">3. Комунікації</div>
     <div class="toggle-row">
       <span>Світло від мережі</span>
-      <div class="btn-group">
-        <button class="btn-option active-green" onclick="toggleBtn(this, 'power')">Є</button>
-        <button class="btn-option" onclick="toggleBtn(this, 'power')">Немає</button>
+      <div class="btn-group" id="group-power">
+        <button class="btn-option" onclick="toggleBtn('power', 'Є')">Є</button>
+        <button class="btn-option" onclick="toggleBtn('power', 'Немає')">Немає</button>
       </div>
     </div>
     <div class="toggle-row">
       <span>Вода</span>
-      <div class="btn-group">
-        <button class="btn-option active-green" onclick="toggleBtn(this, 'water')">Є</button>
-        <button class="btn-option" onclick="toggleBtn(this, 'water')">Немає</button>
+      <div class="btn-group" id="group-water">
+        <button class="btn-option" onclick="toggleBtn('water', 'Є')">Є</button>
+        <button class="btn-option" onclick="toggleBtn('water', 'Немає')">Немає</button>
       </div>
     </div>
   </div>
@@ -131,40 +130,62 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // Зчитування параметрів з URL
+    const urlParams = new URLSearchParams(window.location.search);
+
     let state = {
       restaurantCode: 'KFC-VOKZAL',
       restaurantName: 'KFC Вокзал',
       phone: '+380670000000',
       director: 'Іванов І.',
       tk: 'Петров П.',
-      mainStatus: 'Відчинені',
-      hall: 'Працює',
-      drive: 'Працює',
-      delivery: 'Працює',
-      pickup: 'Працює',
-      power: 'Є',
-      water: 'Є'
+      mainStatus: urlParams.get('status') || 'Відчинені',
+      hall: urlParams.get('hall') || 'Працює',
+      drive: urlParams.get('drive') || 'Працює',
+      delivery: urlParams.get('delivery') || 'Працює',
+      pickup: urlParams.get('pickup') || 'Працює',
+      power: urlParams.get('power') || 'Є',
+      water: urlParams.get('water') || 'Є'
     };
 
-    function selectMainStatus(val, el) {
-      document.querySelectorAll('#main-status-group .btn-option').forEach(b => b.className = 'btn-option');
-      if(val === 'Відчинені') { el.className = 'btn-option active-green'; }
-      if(val === 'В укритті') { el.className = 'btn-option active-orange'; }
-      if(val === 'Зачинені') { el.className = 'btn-option active-red'; }
-      state.mainStatus = val;
+    function renderUI() {
+      selectMainStatus(state.mainStatus);
+      toggleBtn('hall', state.hall);
+      toggleBtn('drive', state.drive);
+      toggleBtn('delivery', state.delivery);
+      toggleBtn('pickup', state.pickup);
+      toggleBtn('power', state.power);
+      toggleBtn('water', state.water);
     }
 
-    function toggleBtn(el, key) {
-      const parent = el.parentElement;
-      parent.querySelectorAll('.btn-option').forEach(b => b.className = 'btn-option');
-      const isPositive = el.innerText === 'Працює' || el.innerText === 'Є';
-      el.className = isPositive ? 'btn-option active-green' : 'btn-option active-red';
-      state[key] = el.innerText;
+    function selectMainStatus(val) {
+      state.mainStatus = val;
+      const group = document.querySelectorAll('#main-status-group .btn-option');
+      group.forEach(b => b.className = 'btn-option');
+      if(val === 'Відчинені') document.getElementById('btn-main-open').className = 'btn-option active-green';
+      if(val === 'В укритті') document.getElementById('btn-main-shelter').className = 'btn-option active-orange';
+      if(val === 'Зачинені') document.getElementById('btn-main-closed').className = 'btn-option active-red';
+    }
+
+    function toggleBtn(key, val) {
+      state[key] = val;
+      const group = document.querySelectorAll(`#group-${key} .btn-option`);
+      group.forEach(b => {
+        b.className = 'btn-option';
+        if (b.innerText === val) {
+          const isPositive = val === 'Працює' || val === 'Є';
+          b.className = isPositive ? 'btn-option active-green' : 'btn-option active-red';
+        }
+      });
     }
 
     function sendData() {
       tg.sendData(JSON.stringify(state));
     }
+
+    // Автоматично виставляємо кнопки відповідно до збереженого стану
+    renderUI();
   </script>
 </body>
 </html>
+
