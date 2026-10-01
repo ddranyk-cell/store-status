@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Статус - KFC Вокзал</title>
+  <title>Статус Ресторанів KFC</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
@@ -22,8 +22,18 @@
       margin-bottom: 16px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .header-card h3 { margin: 0 0 6px 0; font-size: 18px; }
-    .header-info { font-size: 13px; opacity: 0.9; line-height: 1.4; }
+    .select-resto {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 8px;
+      background: #ffffff;
+      color: #1e293b;
+    }
+    .header-info { font-size: 13px; opacity: 0.95; line-height: 1.5; }
     
     .section {
       background: var(--tg-theme-secondary-bg-color, #ffffff);
@@ -33,17 +43,32 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .section-title { font-weight: bold; margin-bottom: 8px; font-size: 12px; color: #6b7280; text-transform: uppercase; }
-    .btn-group { display: flex; gap: 8px; }
+    
+    .btn-group { display: flex; gap: 6px; }
     .btn-option {
-      flex: 1; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;
-      background: #f9fafb; color: #374151; font-weight: 600; font-size: 13px; cursor: pointer; text-align: center;
+      flex: 1; padding: 10px 4px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: #f9fafb; color: #374151; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center;
     }
     .btn-option.active-green { background: #22c55e; color: #fff; border-color: #22c55e; }
     .btn-option.active-red { background: #ef4444; color: #fff; border-color: #ef4444; }
     .btn-option.active-orange { background: #f97316; color: #fff; border-color: #f97316; }
+    .btn-option.active-blue { background: #3b82f6; color: #fff; border-color: #3b82f6; }
     
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
     .toggle-row span { font-size: 14px; font-weight: 500; }
+    .toggle-row-vertical { padding: 6px 0; }
+    .toggle-row-vertical span { font-size: 14px; font-weight: 500; display: block; margin-bottom: 6px; }
+
+    .comment-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+      resize: vertical;
+    }
     
     .submit-btn {
       width: 100%; padding: 14px; background: var(--tg-theme-button-color, #2563eb);
@@ -55,10 +80,12 @@
 <body>
 
   <div class="header-card">
-    <h3>📍 KFC Вокзал (Тест)</h3>
+    <label style="font-size: 11px; text-transform: uppercase; opacity: 0.8; display: block; margin-bottom: 4px;">Оберіть ресторан:</label>
+    <select id="restoSelect" class="select-resto" onchange="onRestaurantChange()"></select>
     <div class="header-info">
-      <div>📞 <b>Тел:</b> +380670000000</div>
-      <div>👤 <b>Директор:</b> Іванов І. | 👔 <b>ТК:</b> Петров П.</div>
+      <div>📞 <b>Тел. закладу:</b> <span id="info-phone">-</span></div>
+      <div>👤 <b>Директор:</b> <span id="info-director">-</span> (<span id="info-dir-phone">-</span>)</div>
+      <div>👔 <b>ТК:</b> <span id="info-tk">-</span> (<span id="info-tk-phone">-</span>)</div>
     </div>
   </div>
 
@@ -67,8 +94,8 @@
     <div class="section-title">1. Загальний статус</div>
     <div class="btn-group" id="main-status-group">
       <div class="btn-option" id="btn-main-open" onclick="selectMainStatus('Відчинені')">Відчинені</div>
-      <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('В укритті')">В укритті</div>
       <div class="btn-option" id="btn-main-closed" onclick="selectMainStatus('Зачинені')">Зачинені</div>
+      <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('Зачинені + в укритті')">Зачинені + в укритті</div>
     </div>
   </div>
 
@@ -77,28 +104,28 @@
     <div class="section-title">2. Канали продажів</div>
     <div class="toggle-row">
       <span>Зал</span>
-      <div class="btn-group" id="group-hall">
+      <div class="btn-group" id="group-hall" style="width: 140px;">
         <button class="btn-option" onclick="toggleBtn('hall', 'Працює')">Працює</button>
         <button class="btn-option" onclick="toggleBtn('hall', 'Ні')">Ні</button>
       </div>
     </div>
     <div class="toggle-row">
       <span>Драйв</span>
-      <div class="btn-group" id="group-drive">
+      <div class="btn-group" id="group-drive" style="width: 140px;">
         <button class="btn-option" onclick="toggleBtn('drive', 'Працює')">Працює</button>
         <button class="btn-option" onclick="toggleBtn('drive', 'Ні')">Ні</button>
       </div>
     </div>
     <div class="toggle-row">
       <span>Доставка</span>
-      <div class="btn-group" id="group-delivery">
+      <div class="btn-group" id="group-delivery" style="width: 140px;">
         <button class="btn-option" onclick="toggleBtn('delivery', 'Працює')">Працює</button>
         <button class="btn-option" onclick="toggleBtn('delivery', 'Ні')">Ні</button>
       </div>
     </div>
     <div class="toggle-row">
-      <span>СС (Самовивіз)</span>
-      <div class="btn-group" id="group-pickup">
+      <span>C&C</span>
+      <div class="btn-group" id="group-pickup" style="width: 140px;">
         <button class="btn-option" onclick="toggleBtn('pickup', 'Працює')">Працює</button>
         <button class="btn-option" onclick="toggleBtn('pickup', 'Ні')">Ні</button>
       </div>
@@ -108,20 +135,28 @@
   <!-- 3. Комунікації -->
   <div class="section">
     <div class="section-title">3. Комунікації</div>
-    <div class="toggle-row">
-      <span>Світло від мережі</span>
+    <div class="toggle-row-vertical">
+      <span>Електрика</span>
       <div class="btn-group" id="group-power">
-        <button class="btn-option" onclick="toggleBtn('power', 'Є')">Є</button>
-        <button class="btn-option" onclick="toggleBtn('power', 'Немає')">Немає</button>
+        <button class="btn-option" onclick="toggleThreeBtn('power', 'Від мережі')">Від мережі</button>
+        <button class="btn-option" onclick="toggleThreeBtn('power', 'Немає')">Немає</button>
+        <button class="btn-option" onclick="toggleThreeBtn('power', 'Від генератора')">Від генератора</button>
       </div>
     </div>
-    <div class="toggle-row">
+    <div class="toggle-row-vertical">
       <span>Вода</span>
       <div class="btn-group" id="group-water">
-        <button class="btn-option" onclick="toggleBtn('water', 'Є')">Є</button>
-        <button class="btn-option" onclick="toggleBtn('water', 'Немає')">Немає</button>
+        <button class="btn-option" onclick="toggleThreeBtn('water', 'Є')">Є</button>
+        <button class="btn-option" onclick="toggleThreeBtn('water', 'Немає')">Немає</button>
+        <button class="btn-option" onclick="toggleThreeBtn('water', 'Від бочки')">Від бочки</button>
       </div>
     </div>
+  </div>
+
+  <!-- 4. Коментар -->
+  <div class="section">
+    <div class="section-title">4. Коментар (за потребою)</div>
+    <textarea id="commentInput" class="comment-input" rows="2" placeholder="Наприклад: Генератор потребує ТО / Немає зв'язку..."></textarea>
   </div>
 
   <button class="submit-btn" onclick="sendData()">Зберегти та відправити</button>
@@ -130,61 +165,118 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Зчитування параметрів з URL
     const urlParams = new URLSearchParams(window.location.search);
+    let RESTAURANTS = {};
+    let savedStates = {};
 
-    let state = {
-      restaurantCode: 'KFC-VOKZAL',
-      restaurantName: 'KFC Вокзал',
-      phone: '+380670000000',
-      director: 'Іванов І.',
-      tk: 'Петров П.',
-      mainStatus: urlParams.get('status') || 'Відчинені',
-      hall: urlParams.get('hall') || 'Працює',
-      drive: urlParams.get('drive') || 'Працює',
-      delivery: urlParams.get('delivery') || 'Працює',
-      pickup: urlParams.get('pickup') || 'Працює',
-      power: urlParams.get('power') || 'Є',
-      water: urlParams.get('water') || 'Є'
-    };
+    try {
+      const rawData = urlParams.get('data');
+      if (rawData) {
+        const parsed = JSON.parse(decodeURIComponent(rawData));
+        RESTAURANTS = parsed.restaurants || {};
+        savedStates = parsed.states || {};
+      }
+    } catch(e) {}
+
+    let currentState = {};
+
+    function initDropdown() {
+      const select = document.getElementById('restoSelect');
+      select.innerHTML = '';
+      for (const [code, info] of Object.entries(RESTAURANTS)) {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.innerText = `📍 ${info.name}`;
+        select.appendChild(opt);
+      }
+      if (Object.keys(RESTAURANTS).length > 0) {
+        onRestaurantChange();
+      }
+    }
+
+    function onRestaurantChange() {
+      const code = document.getElementById('restoSelect').value;
+      const info = RESTAURANTS[code] || {};
+
+      document.getElementById('info-phone').innerText = info.phone || '-';
+      document.getElementById('info-director').innerText = info.director || '-';
+      document.getElementById('info-dir-phone').innerText = info.director_phone || '-';
+      document.getElementById('info-tk').innerText = info.tk || '-';
+      document.getElementById('info-tk-phone').innerText = info.tk_phone || '-';
+
+      const saved = savedStates[code] || {};
+
+      currentState = {
+        restaurantCode: code,
+        restaurantName: info.name,
+        phone: info.phone,
+        director: info.director,
+        directorPhone: info.director_phone,
+        tk: info.tk,
+        tkPhone: info.tk_phone,
+        mainStatus: saved.mainStatus || 'Відчинені',
+        hall: saved.hall || 'Працює',
+        drive: saved.drive || 'Працює',
+        delivery: saved.delivery || 'Працює',
+        pickup: saved.pickup || 'Працює',
+        power: saved.power || 'Від мережі',
+        water: saved.water || 'Є',
+        comment: saved.comment || ''
+      };
+
+      document.getElementById('commentInput').value = currentState.comment;
+      renderUI();
+    }
 
     function renderUI() {
-      selectMainStatus(state.mainStatus);
-      toggleBtn('hall', state.hall);
-      toggleBtn('drive', state.drive);
-      toggleBtn('delivery', state.delivery);
-      toggleBtn('pickup', state.pickup);
-      toggleBtn('power', state.power);
-      toggleBtn('water', state.water);
+      selectMainStatus(currentState.mainStatus);
+      toggleBtn('hall', currentState.hall);
+      toggleBtn('drive', currentState.drive);
+      toggleBtn('delivery', currentState.delivery);
+      toggleBtn('pickup', currentState.pickup);
+      toggleThreeBtn('power', currentState.power);
+      toggleThreeBtn('water', currentState.water);
     }
 
     function selectMainStatus(val) {
-      state.mainStatus = val;
+      currentState.mainStatus = val;
       const group = document.querySelectorAll('#main-status-group .btn-option');
       group.forEach(b => b.className = 'btn-option');
       if(val === 'Відчинені') document.getElementById('btn-main-open').className = 'btn-option active-green';
-      if(val === 'В укритті') document.getElementById('btn-main-shelter').className = 'btn-option active-orange';
       if(val === 'Зачинені') document.getElementById('btn-main-closed').className = 'btn-option active-red';
+      if(val === 'Зачинені + в укритті') document.getElementById('btn-main-shelter').className = 'btn-option active-orange';
     }
 
     function toggleBtn(key, val) {
-      state[key] = val;
+      currentState[key] = val;
       const group = document.querySelectorAll(`#group-${key} .btn-option`);
       group.forEach(b => {
         b.className = 'btn-option';
-        if (b.innerText === val) {
-          const isPositive = val === 'Працює' || val === 'Є';
-          b.className = isPositive ? 'btn-option active-green' : 'btn-option active-red';
+        if (b.innerText.trim() === val) {
+          b.className = (val === 'Працює') ? 'btn-option active-green' : 'btn-option active-red';
+        }
+      });
+    }
+
+    function toggleThreeBtn(key, val) {
+      currentState[key] = val;
+      const group = document.querySelectorAll(`#group-${key} .btn-option`);
+      group.forEach(b => {
+        b.className = 'btn-option';
+        if (b.innerText.trim() === val) {
+          if (val === 'Від мережі' || val === 'Є') b.className = 'btn-option active-green';
+          else if (val === 'Немає') b.className = 'btn-option active-red';
+          else b.className = 'btn-option active-blue'; // Для "Від генератора" та "Від бочки"
         }
       });
     }
 
     function sendData() {
-      tg.sendData(JSON.stringify(state));
+      currentState.comment = document.getElementById('commentInput').value.trim();
+      tg.sendData(JSON.stringify(currentState));
     }
 
-    // Автоматично виставляємо кнопки відповідно до збереженого стану
-    renderUI();
+    initDropdown();
   </script>
 </body>
 </html>
