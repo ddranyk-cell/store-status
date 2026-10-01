@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Статус Ресторанів KFC</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -10,82 +10,88 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--tg-theme-bg-color, #f4f4f5);
       color: var(--tg-theme-text-color, #000);
-      padding: 16px;
+      padding: 10px;
       margin: 0;
       box-sizing: border-box;
+      font-size: 13px;
     }
     .header-card {
       background: #2563eb;
       color: white;
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
     }
     .select-resto {
       width: 100%;
-      padding: 8px 10px;
-      font-size: 16px;
+      padding: 6px 8px;
+      font-size: 14px;
       font-weight: bold;
-      border-radius: 8px;
+      border-radius: 6px;
       border: none;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       background: #ffffff;
       color: #1e293b;
     }
-    .header-info { font-size: 13px; opacity: 0.95; line-height: 1.5; }
+    .header-info { font-size: 11px; opacity: 0.95; line-height: 1.3; }
+    .header-info a { color: #ffffff; text-decoration: underline; font-weight: 600; }
     
     .section {
       background: var(--tg-theme-secondary-bg-color, #ffffff);
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .section-title { font-weight: bold; margin-bottom: 8px; font-size: 12px; color: #6b7280; text-transform: uppercase; }
+    .section-title { font-weight: bold; margin-bottom: 6px; font-size: 10px; color: #6b7280; text-transform: uppercase; }
     
-    .btn-group { display: flex; gap: 6px; }
+    .btn-group { display: flex; gap: 4px; }
     .btn-option {
-      flex: 1; padding: 10px 4px; border: 1px solid #e5e7eb; border-radius: 8px;
-      background: #f9fafb; color: #374151; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center;
+      flex: 1; padding: 6px 2px; border: 1px solid #e5e7eb; border-radius: 6px;
+      background: #f9fafb; color: #374151; font-weight: 600; font-size: 11px; cursor: pointer; text-align: center;
     }
     .btn-option.active-green { background: #22c55e; color: #fff; border-color: #22c55e; }
     .btn-option.active-red { background: #ef4444; color: #fff; border-color: #ef4444; }
     .btn-option.active-orange { background: #f97316; color: #fff; border-color: #f97316; }
     .btn-option.active-blue { background: #3b82f6; color: #fff; border-color: #3b82f6; }
     
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
-    .toggle-row span { font-size: 14px; font-weight: 500; }
-    .toggle-row-vertical { padding: 6px 0; }
-    .toggle-row-vertical span { font-size: 14px; font-weight: 500; display: block; margin-bottom: 6px; }
+    .channels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+    }
+    .channel-item { display: flex; justify-content: space-between; align-items: center; }
+    .channel-item span { font-size: 12px; font-weight: 500; }
+
+    .toggle-row-vert { margin-bottom: 6px; }
+    .toggle-row-vert:last-child { margin-bottom: 0; }
+    .toggle-row-vert span { font-size: 11px; font-weight: 600; display: block; margin-bottom: 3px; color: #4b5563; }
 
     .comment-input {
       width: 100%;
-      padding: 10px;
+      padding: 6px 8px;
       border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-size: 12px;
       box-sizing: border-box;
       outline: none;
-      resize: vertical;
     }
     
     .submit-btn {
-      width: 100%; padding: 14px; background: var(--tg-theme-button-color, #2563eb);
-      color: var(--tg-theme-button-text-color, #ffffff); border: none; border-radius: 10px;
-      font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px;
+      width: 100%; padding: 10px; background: var(--tg-theme-button-color, #2563eb);
+      color: var(--tg-theme-button-text-color, #ffffff); border: none; border-radius: 8px;
+      font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 4px;
     }
   </style>
 </head>
 <body>
 
   <div class="header-card">
-    <label style="font-size: 11px; text-transform: uppercase; opacity: 0.8; display: block; margin-bottom: 4px;">Оберіть ресторан:</label>
     <select id="restoSelect" class="select-resto" onchange="onRestaurantChange()"></select>
     <div class="header-info">
-      <div>📞 <b>Тел. закладу:</b> <span id="info-phone">-</span></div>
-      <div>👤 <b>Директор:</b> <span id="info-director">-</span> (<span id="info-dir-phone">-</span>)</div>
-      <div>👔 <b>ТК:</b> <span id="info-tk">-</span> (<span id="info-tk-phone">-</span>)</div>
+      <div>📞 <b>Тел:</b> <span id="info-phone">-</span></div>
+      <div>👤 <b>Директор:</b> <span id="info-director">-</span></div>
+      <div>👔 <b>ТК:</b> <span id="info-tk">-</span></div>
     </div>
   </div>
 
@@ -95,39 +101,41 @@
     <div class="btn-group" id="main-status-group">
       <div class="btn-option" id="btn-main-open" onclick="selectMainStatus('Відчинені')">Відчинені</div>
       <div class="btn-option" id="btn-main-closed" onclick="selectMainStatus('Зачинені')">Зачинені</div>
-      <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('Зачинені + в укритті')">Зачинені + в укритті</div>
+      <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('Зачинені + в укритті')">Зачинені + укриття</div>
     </div>
   </div>
 
-  <!-- 2. Канали продажів -->
+  <!-- 2. Канали продажів (компактна сітка 2х2) -->
   <div class="section">
     <div class="section-title">2. Канали продажів</div>
-    <div class="toggle-row">
-      <span>Зал</span>
-      <div class="btn-group" id="group-hall" style="width: 140px;">
-        <button class="btn-option" onclick="toggleBtn('hall', 'Працює')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn('hall', 'Ні')">Ні</button>
+    <div class="channels-grid">
+      <div class="channel-item">
+        <span>Зал</span>
+        <div class="btn-group" id="group-hall" style="width: 80px;">
+          <button class="btn-option" onclick="toggleBtn('hall', 'Працює')">Так</button>
+          <button class="btn-option" onclick="toggleBtn('hall', 'Ні')">Ні</button>
+        </div>
       </div>
-    </div>
-    <div class="toggle-row">
-      <span>Драйв</span>
-      <div class="btn-group" id="group-drive" style="width: 140px;">
-        <button class="btn-option" onclick="toggleBtn('drive', 'Працює')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn('drive', 'Ні')">Ні</button>
+      <div class="channel-item">
+        <span>Драйв</span>
+        <div class="btn-group" id="group-drive" style="width: 80px;">
+          <button class="btn-option" onclick="toggleBtn('drive', 'Працює')">Так</button>
+          <button class="btn-option" onclick="toggleBtn('drive', 'Ні')">Ні</button>
+        </div>
       </div>
-    </div>
-    <div class="toggle-row">
-      <span>Доставка</span>
-      <div class="btn-group" id="group-delivery" style="width: 140px;">
-        <button class="btn-option" onclick="toggleBtn('delivery', 'Працює')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn('delivery', 'Ні')">Ні</button>
+      <div class="channel-item">
+        <span>Доставка</span>
+        <div class="btn-group" id="group-delivery" style="width: 80px;">
+          <button class="btn-option" onclick="toggleBtn('delivery', 'Працює')">Так</button>
+          <button class="btn-option" onclick="toggleBtn('delivery', 'Ні')">Ні</button>
+        </div>
       </div>
-    </div>
-    <div class="toggle-row">
-      <span>C&C</span>
-      <div class="btn-group" id="group-pickup" style="width: 140px;">
-        <button class="btn-option" onclick="toggleBtn('pickup', 'Працює')">Працює</button>
-        <button class="btn-option" onclick="toggleBtn('pickup', 'Ні')">Ні</button>
+      <div class="channel-item">
+        <span>C&C</span>
+        <div class="btn-group" id="group-pickup" style="width: 80px;">
+          <button class="btn-option" onclick="toggleBtn('pickup', 'Працює')">Так</button>
+          <button class="btn-option" onclick="toggleBtn('pickup', 'Ні')">Ні</button>
+        </div>
       </div>
     </div>
   </div>
@@ -135,15 +143,15 @@
   <!-- 3. Комунікації -->
   <div class="section">
     <div class="section-title">3. Комунікації</div>
-    <div class="toggle-row-vertical">
+    <div class="toggle-row-vert">
       <span>Електрика</span>
       <div class="btn-group" id="group-power">
         <button class="btn-option" onclick="toggleThreeBtn('power', 'Від мережі')">Від мережі</button>
         <button class="btn-option" onclick="toggleThreeBtn('power', 'Немає')">Немає</button>
-        <button class="btn-option" onclick="toggleThreeBtn('power', 'Від генератора')">Від генератора</button>
+        <button class="btn-option" onclick="toggleThreeBtn('power', 'Від генератора')">Генератор</button>
       </div>
     </div>
-    <div class="toggle-row-vertical">
+    <div class="toggle-row-vert">
       <span>Вода</span>
       <div class="btn-group" id="group-water">
         <button class="btn-option" onclick="toggleThreeBtn('water', 'Є')">Є</button>
@@ -155,8 +163,7 @@
 
   <!-- 4. Коментар -->
   <div class="section">
-    <div class="section-title">4. Коментар (за потребою)</div>
-    <textarea id="commentInput" class="comment-input" rows="2" placeholder="Наприклад: Генератор потребує ТО / Немає зв'язку..."></textarea>
+    <input type="text" id="commentInput" class="comment-input" placeholder="Коментар (за потребою)..." />
   </div>
 
   <button class="submit-btn" onclick="sendData()">Зберегти та відправити</button>
@@ -194,15 +201,20 @@
       }
     }
 
+    function makeClickablePhone(phone, name) {
+      if (!phone || phone === "?") return name || '-';
+      const cleanPhone = String(phone).replace(/\+/g, '').replace(/\s/g, '');
+      const label = name ? `${name} (${phone})` : phone;
+      return `<a href="tel:+${cleanPhone}">${label}</a>`;
+    }
+
     function onRestaurantChange() {
       const code = document.getElementById('restoSelect').value;
       const info = RESTAURANTS[code] || {};
 
-      document.getElementById('info-phone').innerText = info.phone || '-';
-      document.getElementById('info-director').innerText = info.director || '-';
-      document.getElementById('info-dir-phone').innerText = info.director_phone || '-';
-      document.getElementById('info-tk').innerText = info.tk || '-';
-      document.getElementById('info-tk-phone').innerText = info.tk_phone || '-';
+      document.getElementById('info-phone').innerHTML = makeClickablePhone(info.phone, '');
+      document.getElementById('info-director').innerHTML = makeClickablePhone(info.director_phone, info.director);
+      document.getElementById('info-tk').innerHTML = makeClickablePhone(info.tk_phone, info.tk);
 
       const saved = savedStates[code] || {};
 
@@ -252,7 +264,8 @@
       const group = document.querySelectorAll(`#group-${key} .btn-option`);
       group.forEach(b => {
         b.className = 'btn-option';
-        if (b.innerText.trim() === val) {
+        const isYes = b.innerText.trim() === 'Так';
+        if ((isYes && val === 'Працює') || (!isYes && val === 'Ні')) {
           b.className = (val === 'Працює') ? 'btn-option active-green' : 'btn-option active-red';
         }
       });
@@ -263,10 +276,13 @@
       const group = document.querySelectorAll(`#group-${key} .btn-option`);
       group.forEach(b => {
         b.className = 'btn-option';
-        if (b.innerText.trim() === val) {
-          if (val === 'Від мережі' || val === 'Є') b.className = 'btn-option active-green';
-          else if (val === 'Немає') b.className = 'btn-option active-red';
-          else b.className = 'btn-option active-blue'; // Для "Від генератора" та "Від бочки"
+        const text = b.innerText.trim();
+        if ((text === 'Від мережі' && val === 'Від мережі') || (text === 'Є' && val === 'Є')) {
+          b.className = 'btn-option active-green';
+        } else if (text === 'Немає' && val === 'Немає') {
+          b.className = 'btn-option active-red';
+        } else if ((text === 'Генератор' && val === 'Від генератора') || (text === 'Від бочки' && val === 'Від бочки')) {
+          b.className = 'btn-option active-blue';
         }
       });
     }
@@ -280,4 +296,3 @@
   </script>
 </body>
 </html>
-
