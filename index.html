@@ -18,24 +18,20 @@
     .header-card {
       background: #2563eb;
       color: white;
-      padding: 8px 10px;
+      padding: 10px;
       border-radius: 10px;
       margin-bottom: 8px;
     }
     .select-resto {
       width: 100%;
-      padding: 6px 8px;
+      padding: 8px;
       font-size: 14px;
       font-weight: bold;
       border-radius: 6px;
       border: none;
-      margin-bottom: 6px;
       background: #ffffff;
       color: #1e293b;
     }
-    .header-info { font-size: 11px; opacity: 0.95; line-height: 1.3; }
-    .header-info a { color: #ffffff; text-decoration: underline; font-weight: 600; }
-    
     .section {
       background: var(--tg-theme-secondary-bg-color, #ffffff);
       padding: 8px 10px;
@@ -88,11 +84,6 @@
 
   <div class="header-card">
     <select id="restoSelect" class="select-resto" onchange="onRestaurantChange()"></select>
-    <div class="header-info">
-      <div>📞 <b>Тел:</b> <span id="info-phone">-</span></div>
-      <div>👤 <b>Директор:</b> <span id="info-director">-</span></div>
-      <div>👔 <b>ТК:</b> <span id="info-tk">-</span></div>
-    </div>
   </div>
 
   <!-- 1. Загальний статус -->
@@ -198,9 +189,9 @@
         return;
       }
 
-      RESTAURANTS.forEach((item, index) => {
+      RESTAURANTS.forEach((item) => {
         const opt = document.createElement('option');
-        opt.value = index;
+        opt.value = item[0]; // Код
         opt.innerText = `📍 ${item[1]}`; // Назва
         select.appendChild(opt);
       });
@@ -208,39 +199,14 @@
       onRestaurantChange();
     }
 
-    function makeClickablePhone(phone, name) {
-      if (!phone || phone === "?") return name || '-';
-      const cleanPhone = String(phone).replace(/\+/g, '').replace(/\s/g, '');
-      const label = name ? `${name} (${phone})` : phone;
-      return `<a href="tel:+${cleanPhone}">${label}</a>`;
-    }
-
     function onRestaurantChange() {
-      const idx = document.getElementById('restoSelect').value;
-      if (idx === '' || !RESTAURANTS[idx]) return;
-      
-      const item = RESTAURANTS[idx];
-      // Масив розпаковується як: [code, name, phone, dir, dir_phone, tk, tk_phone]
-      const code = item[0];
-      const name = item[1];
-      const phone = item[2];
-      const dir = item[3];
-      const dirPhone = item[4];
-      const tk = item[5];
-      const tkPhone = item[6];
-
-      document.getElementById('info-phone').innerHTML = makeClickablePhone(phone, '');
-      document.getElementById('info-director').innerHTML = makeClickablePhone(dirPhone, dir);
-      document.getElementById('info-tk').innerHTML = makeClickablePhone(tkPhone, tk);
+      const select = document.getElementById('restoSelect');
+      const code = select.value;
+      const name = select.options[select.selectedIndex]?.text?.replace('📍 ', '') || code;
 
       currentState = {
         restaurantCode: code,
         restaurantName: name,
-        phone: phone,
-        director: dir,
-        directorPhone: dirPhone,
-        tk: tk,
-        tkPhone: tkPhone,
         mainStatus: 'Відчинені',
         hall: 'Працює',
         drive: 'Працює',
