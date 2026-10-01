@@ -174,14 +174,12 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     let RESTAURANTS = {};
-    let savedStates = {};
 
     try {
       const rawData = urlParams.get('data');
       if (rawData) {
         const parsed = JSON.parse(decodeURIComponent(rawData));
-        RESTAURANTS = parsed.restaurants || {};
-        savedStates = parsed.states || {};
+        RESTAURANTS = parsed.r || {};
       }
     } catch(e) {}
 
@@ -193,7 +191,7 @@
       for (const [code, info] of Object.entries(RESTAURANTS)) {
         const opt = document.createElement('option');
         opt.value = code;
-        opt.innerText = `📍 ${info.name}`;
+        opt.innerText = `📍 ${info.n}`;
         select.appendChild(opt);
       }
       if (Object.keys(RESTAURANTS).length > 0) {
@@ -212,31 +210,29 @@
       const code = document.getElementById('restoSelect').value;
       const info = RESTAURANTS[code] || {};
 
-      document.getElementById('info-phone').innerHTML = makeClickablePhone(info.phone, '');
-      document.getElementById('info-director').innerHTML = makeClickablePhone(info.director_phone, info.director);
-      document.getElementById('info-tk').innerHTML = makeClickablePhone(info.tk_phone, info.tk);
-
-      const saved = savedStates[code] || {};
+      document.getElementById('info-phone').innerHTML = makeClickablePhone(info.p, '');
+      document.getElementById('info-director').innerHTML = makeClickablePhone(info.dp, info.d);
+      document.getElementById('info-tk').innerHTML = makeClickablePhone(info.tp, info.t);
 
       currentState = {
         restaurantCode: code,
-        restaurantName: info.name,
-        phone: info.phone,
-        director: info.director,
-        directorPhone: info.director_phone,
-        tk: info.tk,
-        tkPhone: info.tk_phone,
-        mainStatus: saved.mainStatus || 'Відчинені',
-        hall: saved.hall || 'Працює',
-        drive: saved.drive || 'Працює',
-        delivery: saved.delivery || 'Працює',
-        pickup: saved.pickup || 'Працює',
-        power: saved.power || 'Від мережі',
-        water: saved.water || 'Є',
-        comment: saved.comment || ''
+        restaurantName: info.n,
+        phone: info.p,
+        director: info.d,
+        directorPhone: info.dp,
+        tk: info.t,
+        tkPhone: info.tp,
+        mainStatus: 'Відчинені',
+        hall: 'Працює',
+        drive: 'Працює',
+        delivery: 'Працює',
+        pickup: 'Працює',
+        power: 'Від мережі',
+        water: 'Є',
+        comment: ''
       };
 
-      document.getElementById('commentInput').value = currentState.comment;
+      document.getElementById('commentInput').value = '';
       renderUI();
     }
 
