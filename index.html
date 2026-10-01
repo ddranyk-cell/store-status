@@ -82,130 +82,179 @@
       color: var(--tg-theme-button-text-color, #ffffff); border: none; border-radius: 8px;
       font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 4px;
     }
+    .loading { text-align: center; padding: 20px; font-weight: bold; color: #2563eb; }
   </style>
 </head>
 <body>
 
-  <div class="header-card">
-    <select id="restoSelect" class="select-resto" onchange="onRestaurantChange()"></select>
-    <div class="header-info">
-      <div>📞 <b>Тел:</b> <span id="info-phone">-</span></div>
-      <div>👤 <b>Директор:</b> <span id="info-director">-</span></div>
-      <div>👔 <b>ТК:</b> <span id="info-tk">-</span></div>
-    </div>
-  </div>
+  <div id="loader" class="loading">Завантаження ресторанів...</div>
 
-  <!-- 1. Загальний статус -->
-  <div class="section">
-    <div class="section-title">1. Загальний статус</div>
-    <div class="btn-group" id="main-status-group">
-      <div class="btn-option" id="btn-main-open" onclick="selectMainStatus('Відчинені')">Відчинені</div>
-      <div class="btn-option" id="btn-main-closed" onclick="selectMainStatus('Зачинені')">Зачинені</div>
-      <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('Зачинені + в укритті')">Зачинені + укриття</div>
+  <div id="content" style="display: none;">
+    <div class="header-card">
+      <select id="restoSelect" class="select-resto" onchange="onRestaurantChange()"></select>
+      <div class="header-info">
+        <div>📞 <b>Тел:</b> <span id="info-phone">-</span></div>
+        <div>👤 <b>Директор:</b> <span id="info-director">-</span></div>
+        <div>👔 <b>ТК:</b> <span id="info-tk">-</span></div>
+      </div>
     </div>
-  </div>
 
-  <!-- 2. Канали продажів -->
-  <div class="section">
-    <div class="section-title">2. Канали продажів</div>
-    <div class="channels-grid">
-      <div class="channel-item">
-        <span>Зал</span>
-        <div class="btn-group" id="group-hall" style="width: 80px;">
-          <button class="btn-option" onclick="toggleBtn('hall', 'Працює')">Так</button>
-          <button class="btn-option" onclick="toggleBtn('hall', 'Ні')">Ні</button>
+    <!-- 1. Загальний статус -->
+    <div class="section">
+      <div class="section-title">1. Загальний статус</div>
+      <div class="btn-group" id="main-status-group">
+        <div class="btn-option" id="btn-main-open" onclick="selectMainStatus('Відчинені')">Відчинені</div>
+        <div class="btn-option" id="btn-main-closed" onclick="selectMainStatus('Зачинені')">Зачинені</div>
+        <div class="btn-option" id="btn-main-shelter" onclick="selectMainStatus('Зачинені + в укритті')">Зачинені + укриття</div>
+      </div>
+    </div>
+
+    <!-- 2. Канали продажів -->
+    <div class="section">
+      <div class="section-title">2. Канали продажів</div>
+      <div class="channels-grid">
+        <div class="channel-item">
+          <span>Зал</span>
+          <div class="btn-group" id="group-hall" style="width: 80px;">
+            <button class="btn-option" onclick="toggleBtn('hall', 'Працює')">Так</button>
+            <button class="btn-option" onclick="toggleBtn('hall', 'Ні')">Ні</button>
+          </div>
+        </div>
+        <div class="channel-item">
+          <span>Драйв</span>
+          <div class="btn-group" id="group-drive" style="width: 80px;">
+            <button class="btn-option" onclick="toggleBtn('drive', 'Працює')">Так</button>
+            <button class="btn-option" onclick="toggleBtn('drive', 'Ні')">Ні</button>
+          </div>
+        </div>
+        <div class="channel-item">
+          <span>Доставка</span>
+          <div class="btn-group" id="group-delivery" style="width: 80px;">
+            <button class="btn-option" onclick="toggleBtn('delivery', 'Працює')">Так</button>
+            <button class="btn-option" onclick="toggleBtn('delivery', 'Ні')">Ні</button>
+          </div>
+        </div>
+        <div class="channel-item">
+          <span>C&C</span>
+          <div class="btn-group" id="group-pickup" style="width: 80px;">
+            <button class="btn-option" onclick="toggleBtn('pickup', 'Працює')">Так</button>
+            <button class="btn-option" onclick="toggleBtn('pickup', 'Ні')">Ні</button>
+          </div>
         </div>
       </div>
-      <div class="channel-item">
-        <span>Драйв</span>
-        <div class="btn-group" id="group-drive" style="width: 80px;">
-          <button class="btn-option" onclick="toggleBtn('drive', 'Працює')">Так</button>
-          <button class="btn-option" onclick="toggleBtn('drive', 'Ні')">Ні</button>
+    </div>
+
+    <!-- 3. Комунікації -->
+    <div class="section">
+      <div class="section-title">3. Комунікації</div>
+      <div class="toggle-row-vert">
+        <span>Електрика</span>
+        <div class="btn-group" id="group-power">
+          <button class="btn-option" onclick="toggleThreeBtn('power', 'Від мережі')">Від мережі</button>
+          <button class="btn-option" onclick="toggleThreeBtn('power', 'Немає')">Немає</button>
+          <button class="btn-option" onclick="toggleThreeBtn('power', 'Від генератора')">Генератор</button>
         </div>
       </div>
-      <div class="channel-item">
-        <span>Доставка</span>
-        <div class="btn-group" id="group-delivery" style="width: 80px;">
-          <button class="btn-option" onclick="toggleBtn('delivery', 'Працює')">Так</button>
-          <button class="btn-option" onclick="toggleBtn('delivery', 'Ні')">Ні</button>
-        </div>
-      </div>
-      <div class="channel-item">
-        <span>C&C</span>
-        <div class="btn-group" id="group-pickup" style="width: 80px;">
-          <button class="btn-option" onclick="toggleBtn('pickup', 'Працює')">Так</button>
-          <button class="btn-option" onclick="toggleBtn('pickup', 'Ні')">Ні</button>
+      <div class="toggle-row-vert">
+        <span>Вода</span>
+        <div class="btn-group" id="group-water">
+          <button class="btn-option" onclick="toggleThreeBtn('water', 'Є')">Є</button>
+          <button class="btn-option" onclick="toggleThreeBtn('water', 'Немає')">Немає</button>
+          <button class="btn-option" onclick="toggleThreeBtn('water', 'Від бочки')">Від бочки</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 3. Комунікації -->
-  <div class="section">
-    <div class="section-title">3. Комунікації</div>
-    <div class="toggle-row-vert">
-      <span>Електрика</span>
-      <div class="btn-group" id="group-power">
-        <button class="btn-option" onclick="toggleThreeBtn('power', 'Від мережі')">Від мережі</button>
-        <button class="btn-option" onclick="toggleThreeBtn('power', 'Немає')">Немає</button>
-        <button class="btn-option" onclick="toggleThreeBtn('power', 'Від генератора')">Генератор</button>
-      </div>
+    <!-- 4. Коментар -->
+    <div class="section">
+      <input type="text" id="commentInput" class="comment-input" placeholder="Коментар (за потребою)..." />
     </div>
-    <div class="toggle-row-vert">
-      <span>Вода</span>
-      <div class="btn-group" id="group-water">
-        <button class="btn-option" onclick="toggleThreeBtn('water', 'Є')">Є</button>
-        <button class="btn-option" onclick="toggleThreeBtn('water', 'Немає')">Немає</button>
-        <button class="btn-option" onclick="toggleThreeBtn('water', 'Від бочки')">Від бочки</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- 4. Коментар -->
-  <div class="section">
-    <input type="text" id="commentInput" class="comment-input" placeholder="Коментар (за потребою)..." />
+    <button class="submit-btn" onclick="sendData()">Зберегти та відправити</button>
   </div>
-
-  <button class="submit-btn" onclick="sendData()">Зберегти та відправити</button>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let RESTAURANTS = [];
+    const SHEET_ID = '1vrq6p1Pb4D6kHNSbiNOMPA426Hh25FSGGez4b7ahqTA';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Ресторани')}`;
 
-    try {
-      const rawData = urlParams.get('data');
-      if (rawData) {
-        RESTAURANTS = JSON.parse(decodeURIComponent(rawData));
+    let RESTAURANTS = {};
+    let currentState = {};
+
+    async function loadRestaurants() {
+      try {
+        const response = await fetch(CSV_URL);
+        const text = await response.text();
+        
+        const lines = text.split('\n');
+        const headers = parseCSVLine(lines[0]);
+        
+        const codeIdx = headers.findIndex(h => h.includes('Код'));
+        const nameIdx = headers.findIndex(h => h.includes('Назва'));
+        const phoneIdx = headers.findIndex(h => h.includes('Телефон ресторану'));
+        const dirIdx = headers.findIndex(h => h.includes('Директор ресторану'));
+        const dirPhoneIdx = headers.findIndex(h => h.includes('Телефон директора'));
+        const tkIdx = headers.findIndex(h => h.includes('ТК') && !h.includes('Телефон') && !h.includes('Пошта') && !h.includes('ІД'));
+        const tkPhoneIdx = headers.findIndex(h => h.includes('Телефон ТК'));
+
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          const row = parseCSVLine(lines[i]);
+          const code = row[codeIdx];
+          if (code) {
+            RESTAURANTS[code] = {
+              name: row[nameIdx] || code,
+              phone: row[phoneIdx] || '',
+              director: row[dirIdx] || '',
+              director_phone: row[dirPhoneIdx] || '',
+              tk: row[tkIdx] || '',
+              tk_phone: row[tkPhoneIdx] || ''
+            };
+          }
+        }
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        initDropdown();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('loader').innerText = 'Помилка завантаження даних з Google Таблиці.';
       }
-    } catch(e) {
-      console.error(e);
     }
 
-    let currentState = {};
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim().replace(/^"|"$/g, ''));
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim().replace(/^"|"$/g, ''));
+      return result;
+    }
 
     function initDropdown() {
       const select = document.getElementById('restoSelect');
       select.innerHTML = '';
-      
-      if (!Array.isArray(RESTAURANTS) || RESTAURANTS.length === 0) {
+      for (const [code, info] of Object.entries(RESTAURANTS)) {
         const opt = document.createElement('option');
-        opt.value = '';
-        opt.innerText = 'Помилка завантаження списку';
+        opt.value = code;
+        opt.innerText = `📍 ${info.name}`;
         select.appendChild(opt);
-        return;
       }
-
-      RESTAURANTS.forEach((item, index) => {
-        const opt = document.createElement('option');
-        opt.value = index;
-        opt.innerText = `📍 ${item.n}`;
-        select.appendChild(opt);
-      });
-
-      onRestaurantChange();
+      if (Object.keys(RESTAURANTS).length > 0) {
+        onRestaurantChange();
+      }
     }
 
     function makeClickablePhone(phone, name) {
@@ -216,23 +265,21 @@
     }
 
     function onRestaurantChange() {
-      const idx = document.getElementById('restoSelect').value;
-      if (idx === '' || !RESTAURANTS[idx]) return;
-      
-      const info = RESTAURANTS[idx];
+      const code = document.getElementById('restoSelect').value;
+      const info = RESTAURANTS[code] || {};
 
-      document.getElementById('info-phone').innerHTML = makeClickablePhone(info.p, '');
-      document.getElementById('info-director').innerHTML = makeClickablePhone(info.dp, info.d);
-      document.getElementById('info-tk').innerHTML = makeClickablePhone(info.tp, info.t);
+      document.getElementById('info-phone').innerHTML = makeClickablePhone(info.phone, '');
+      document.getElementById('info-director').innerHTML = makeClickablePhone(info.director_phone, info.director);
+      document.getElementById('info-tk').innerHTML = makeClickablePhone(info.tk_phone, info.tk);
 
       currentState = {
-        restaurantCode: info.c,
-        restaurantName: info.n,
-        phone: info.p,
-        director: info.d,
-        directorPhone: info.dp,
-        tk: info.t,
-        tkPhone: info.tp,
+        restaurantCode: code,
+        restaurantName: info.name,
+        phone: info.phone,
+        director: info.director,
+        directorPhone: info.director_phone,
+        tk: info.tk,
+        tkPhone: info.tk_phone,
         mainStatus: 'Відчинені',
         hall: 'Працює',
         drive: 'Працює',
@@ -322,7 +369,7 @@
       tg.sendData(JSON.stringify(currentState));
     }
 
-    initDropdown();
+    loadRestaurants();
   </script>
 </body>
 </html>
