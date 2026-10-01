@@ -241,7 +241,7 @@
     }
 
     function renderUI() {
-      selectMainStatus(currentState.mainStatus);
+      selectMainStatus(currentState.mainStatus, false);
       toggleBtn('hall', currentState.hall);
       toggleBtn('drive', currentState.drive);
       toggleBtn('delivery', currentState.delivery);
@@ -250,13 +250,36 @@
       toggleThreeBtn('water', currentState.water);
     }
 
-    function selectMainStatus(val) {
+    function selectMainStatus(val, autoUpdateChannels = true) {
       currentState.mainStatus = val;
       const group = document.querySelectorAll('#main-status-group .btn-option');
       group.forEach(b => b.className = 'btn-option');
-      if(val === 'Відчинені') document.getElementById('btn-main-open').className = 'btn-option active-green';
-      if(val === 'Зачинені') document.getElementById('btn-main-closed').className = 'btn-option active-red';
-      if(val === 'Зачинені + в укритті') document.getElementById('btn-main-shelter').className = 'btn-option active-orange';
+      
+      if(val === 'Відчинені') {
+        document.getElementById('btn-main-open').className = 'btn-option active-green';
+        if (autoUpdateChannels) {
+          toggleBtn('hall', 'Працює');
+          toggleBtn('drive', 'Працює');
+          toggleBtn('delivery', 'Працює');
+          toggleBtn('pickup', 'Працює');
+        }
+      } else if(val === 'Зачинені') {
+        document.getElementById('btn-main-closed').className = 'btn-option active-red';
+        if (autoUpdateChannels) {
+          toggleBtn('hall', 'Ні');
+          toggleBtn('drive', 'Ні');
+          toggleBtn('delivery', 'Ні');
+          toggleBtn('pickup', 'Ні');
+        }
+      } else if(val === 'Зачинені + в укритті') {
+        document.getElementById('btn-main-shelter').className = 'btn-option active-orange';
+        if (autoUpdateChannels) {
+          toggleBtn('hall', 'Ні');
+          toggleBtn('drive', 'Ні');
+          toggleBtn('delivery', 'Ні');
+          toggleBtn('pickup', 'Ні');
+        }
+      }
     }
 
     function toggleBtn(key, val) {
